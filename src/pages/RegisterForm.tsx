@@ -36,10 +36,10 @@ export function RegisterForm() {
       const r = await authApi.signup(formData.name, formData.email, formData.password);
       
       if (r && r.token) {
-        localStorage.setItem('skillhub_token', r.token);
-        localStorage.setItem('user', JSON.stringify(r.user));
-        nav('/dashboard'); 
-      } else {
+      localStorage.setItem('skillhub_token', r.token);
+      localStorage.setItem('user', JSON.stringify(r.user));
+      nav('/onboarding'); 
+}else {
         setError("Registration succeeded, but login data missing.");
       }
     } catch (e: any) { 
