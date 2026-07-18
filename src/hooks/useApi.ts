@@ -1,0 +1,2 @@
+import { useEffect, useState } from 'react';
+export function useApi<T>(fetcher: () => Promise<T>, initial: T) { const [data, setData] = useState<T>(initial); const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const reload = async () => { setLoading(true); try { setData(await fetcher()); setError('') } catch (e: any) { setError(e.message) } finally { setLoading(false) } }; useEffect(() => { void reload() }, []); return { data, setData, loading, error, reload } }

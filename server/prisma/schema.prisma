@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Goal {
+  JOB
+  FREELANCING
+  COLLEGE
+  STARTUP
+  INTERVIEW_PREPARATION
+}
+
+enum ResourceType {
+  DISCORD
+  GITHUB
+  REDDIT
+  TWITTER
+  YOUTUBE
+  BLOG
+  DOCUMENTATION
+}
+
+model User {
+  id                     String            @id @default(cuid())
+  email                  String            @unique
+  passwordHash           String
+  name                   String
+  avatarUrl              String?
+  profile                Profile?
+  roadmap                Roadmap?
+  activities             Activity[]
+  posts                  Post[]
+  memberships            CommunityMember[]
+  messages               ChatMessage[]
+  comments               Comment[]
+  likes                  PostLike[]
+  notifications          Notification[]    @relation("NotificationRecipient")
+  generatedNotifications Notification[]    @relation("NotificationActor")
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  @@index([createdAt])
+}
+
+model Profile {
+  id           String     @id @default(cuid())
+  userId       String     @unique
+  level        SkillLevel @default(BEGINNER)
+  domain       String     @default("Frontend Development")
+  goal         Goal       @default(JOB)
+  dailyMinutes Int        @default(120)
+  language     String     @default("English")
+  interests    String[]   @default([])
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime   @updatedAt
+
+  @@index([domain])
+}
+
+model Roadmap {
+  id        String        @id @default(cuid())
+  userId    String        @unique
+  title     String
+  progress  Int           @default(0)
+  weeks     RoadmapWeek[]
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model RoadmapWeek {
+  id          String  @id @default(cuid())
+  roadmapId   String
+  position    Int
+  title       String
+  description String?
+  roadmap     Roadmap @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@unique([roadmapId, position])
+  @@index([roadmapId])
+}
+
+model Task {
+  id              String      @id @default(cuid())
+  weekId          String
+  title           String
+  durationMinutes Int         @default(30)
+  completed       Boolean     @default(false)
+  completedAt     DateTime?
+  position        Int         @default(0)
+  week            RoadmapWeek @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
+  @@index([weekId, completed])
+}
+
+model Community {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  type        ResourceType
+  url         String
+  description String
+  whySuitable String
+  domains     String[]          @default([])
+  memberCount Int               @default(0)
+  createdById String?
+  members     CommunityMember[]
+  posts       Post[]
+  messages    ChatMessage[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([type])
+}
+
+model CommunityMember {
+  userId      String
+  communityId String
+  joinedAt    DateTime         @default(now())
+  status      MembershipStatus @default(ACTIVE)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community   Community        @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@id([userId, communityId])
+  @@index([communityId])
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  communityId String
+  authorId    String
+  title       String
+  body        String
+  community   Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  likes       PostLike[]
+  comments    Comment[]
+
+  @@index([communityId, createdAt])
+  @@index([authorId])
+}
+
+enum MembershipStatus {
+  ACTIVE
+  PENDING
+}
+
+enum NotificationType {
+  POST_LIKE
+  POST_COMMENT
+  COMMUNITY_JOIN
+}
+
+model ChatMessage {
+  id          String    @id @default(cuid())
+  communityId String
+  senderId    String
+  body        String
+  createdAt   DateTime  @default(now())
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  sender      User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([communityId, createdAt])
+}
+
+model PostLike {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String
+  actorId     String?
+  type        NotificationType
+  text        String
+  readAt      DateTime?
+  createdAt   DateTime         @default(now())
+  recipient   User             @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor       User?            @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId, readAt, createdAt])
+}
+
+model ProjectTemplate {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  level       SkillLevel
+  domain      String
+  skills      String[]   @default([])
+  createdAt   DateTime   @default(now())
+
+  @@index([domain, level])
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  type        ResourceType
+  url         String
+  description String
+  domains     String[]     @default([])
+
+  @@index([type])
+}
+
+model Activity {
+  id      String   @id @default(cuid())
+  userId  String
+  date    DateTime @default(now())
+  minutes Int
+  type    String   @default("learning")
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
