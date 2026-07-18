@@ -13,8 +13,8 @@ const server = http.createServer(app);
 
 app.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://skillverse-project.vercel.app"
+    "https://skillverse-project.vercel.app", 
+    "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
