@@ -12,7 +12,10 @@ const app = express();
 const server = http.createServer(app); 
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://skillverse-project.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -25,7 +28,10 @@ app.post('/api/ai-chat', chatWithAi);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://skillverse-project.vercel.app"
+    ],
     methods: ["GET", "POST"]
   }
 });
