@@ -13,10 +13,11 @@ const server = http.createServer(app);
 
 app.use(cors({
   origin: [
-    "https://skillverse-project.vercel.app", 
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://skillverse-project.vercel.app",
+    "https://skillverse-project-git-main-tanvis-projects-242fb576.vercel.app"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"],
   credentials: true
 }));
 
@@ -27,13 +28,14 @@ app.use('/api/communities', communityRoutes);
 app.use('/api/profile', profileRoutes);
 app.post('/api/ai-chat', chatWithAi);
 
-const io = new Server(server, {
-  cors: {
-    origin: [
+const io = new Server(server,{
+  cors:{
+    origin:[
       "http://localhost:5173",
-      "https://skillverse-project.vercel.app"
+      "https://skillverse-project.vercel.app",
+      "https://skillverse-project-git-main-tanvis-projects-242fb576.vercel.app"
     ],
-    methods: ["GET", "POST"]
+    methods:["GET","POST"]
   }
 });
 
