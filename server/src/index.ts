@@ -15,7 +15,6 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "https://skillverse-project.vercel.app",
-    "https://skillverse-project-git-main-tanvis-projects-242fb576.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE","OPTIONS"],
   credentials: true
@@ -33,7 +32,6 @@ const io = new Server(server,{
     origin:[
       "http://localhost:5173",
       "https://skillverse-project.vercel.app",
-      "https://skillverse-project-git-main-tanvis-projects-242fb576.vercel.app"
     ],
     methods:["GET","POST"]
   }
