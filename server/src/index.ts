@@ -7,7 +7,7 @@ import communityRoutes from './routes/communities.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import { chatWithAi } from './controllers/ai.controller.js';
 import { configureSocket } from './socket.js';
-
+import profileRoutes from './routes/profile.routes.js';
 const app = express();
 const server = http.createServer(app); 
 
@@ -24,6 +24,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);         
 app.use('/api/communities', communityRoutes);
+app.use('/api/profile', profileRoutes);
 app.post('/api/ai-chat', chatWithAi);
 
 const io = new Server(server, {
