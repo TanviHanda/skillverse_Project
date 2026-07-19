@@ -19,7 +19,7 @@ const levels = [
 export function Onboarding() {
   const [step, setStep] = useState(1);
   const [selection, setSelection] = useState({ domain: '', level: '' });
-  const [loading, setLoading] = useState(false); // Loading state add kiya
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
   const handleDomainSelect = (id: string) => {
@@ -31,26 +31,29 @@ export function Onboarding() {
     setSelection({ ...selection, level: id });
   };
 
-  const finishOnboarding = async () => {
-    setLoading(true);
-    try {
-      console.log("Onboarding Complete:", selection);
-      
-      // API call add kardi
-      await api('/profile/onboarding', {
-        method: 'POST',
-        body: JSON.stringify(selection)
-      });
+const finishOnboarding = async () => {
+  setLoading(true);
 
-      navigate('/dashboard');
-    } catch (error) {
-      console.error("Failed to save onboarding:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    console.log("Onboarding Complete:", selection);
 
+   
+
+    await api('api/profile', {
+  method: 'PUT',
+  body: JSON.stringify({
+    domain: selection.domain,
+    level: selection.level.toUpperCase()
+  })
+});
+ navigate('/dashboard');
+
+  } catch (error) {
+    console.error("Failed to save onboarding:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center p-6">
       {step === 1 && (
