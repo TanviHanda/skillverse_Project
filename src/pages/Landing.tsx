@@ -10,7 +10,7 @@ export function Landing() {
         <h1 className="text-xl font-bold">SkillVerse</h1>
         <div className="flex gap-6 items-center">
           <button 
-            onClick={() => navigate('/login')} 
+            onClick={() => navigate('/register')} 
             className="hover:text-indigo-400 transition"
           >
             Sign In
