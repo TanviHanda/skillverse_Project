@@ -32,21 +32,30 @@ export function RegisterForm() {
     
     setBusy(true);
     setError(''); 
-    try {
-      const r = await authApi.signup(formData.name, formData.email, formData.password);
-      
-      if (r && r.token) {
-      localStorage.setItem('skillhub_token', r.token);
-      localStorage.setItem('user', JSON.stringify(r.user));
-      nav('/onboarding'); 
-}else {
-        setError("Registration succeeded, but login data missing.");
-      }
-    } catch (e: any) { 
-      setError(e.message || "Registration failed"); 
-    } finally { 
-      setBusy(false); 
-    }
+   try {
+  const r = await authApi.signup(formData.name, formData.email, formData.password);
+
+  console.log("Signup Response:", r);
+
+  if (r && r.token) {
+    console.log("Saving token:", r.token);
+
+    localStorage.setItem("skillhub_token", r.token);
+    localStorage.setItem("user", JSON.stringify(r.user));
+
+    console.log("Stored Token:", localStorage.getItem("skillhub_token"));
+
+    nav("/onboarding");
+  } else {
+    console.log("No token received");
+    setError("Registration succeeded, but login data missing.");
+  }
+} catch (e: any) {
+  console.error(e);
+  setError(e.message || "Registration failed");
+} finally {
+  setBusy(false);
+}
   };
 
   return (
