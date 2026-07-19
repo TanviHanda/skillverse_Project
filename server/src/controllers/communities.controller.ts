@@ -37,7 +37,7 @@ export const getCommunities = async (req: Request, res: Response, next: NextFunc
       joined: userId ? (c.members?.length ?? 0) > 0 : false,
       recommendationReason: c.whySuitable 
     })));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getCommunities] Error:", e); next(e); }
 };
 
 export const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -46,7 +46,7 @@ export const createCommunity = async (req: Request, res: Response, next: NextFun
     res.status(201).json(await prisma.community.create({ 
       data: { ...communitySchema.parse(req.body), createdById: req.user.id } 
     }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[createCommunity] Error:", e); next(e); }
 };
 
 export const updateCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -56,7 +56,7 @@ export const updateCommunity = async (req: Request, res: Response, next: NextFun
     const found = await prisma.community.findUnique({ where: { id: communityId } });
     if (!found || found.createdById !== req.user.id) return res.status(403).json({ message: 'Only the creator can edit' });
     res.json(await prisma.community.update({ where: { id: found.id }, data: communitySchema.parse(req.body) }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[updateCommunity] Error:", e); next(e); }
 };
 
 export const deleteCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -67,7 +67,7 @@ export const deleteCommunity = async (req: Request, res: Response, next: NextFun
     if (!c || c.createdById !== req.user.id) return res.status(403).json({ message: 'Only the creator can delete' });
     await prisma.community.delete({ where: { id: c.id } });
     res.status(204).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[deleteCommunity] Error:", e); next(e); }
 };
 
 export const joinCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -79,7 +79,7 @@ export const joinCommunity = async (req: Request, res: Response, next: NextFunct
       update: {}
     });
     res.status(204).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[joinCommunity] Error:", e); next(e); }
 };
 
 export const leaveCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -89,7 +89,7 @@ export const leaveCommunity = async (req: Request, res: Response, next: NextFunc
       where: { userId: req.user.id, communityId: req.params.id as string } 
     });
     res.status(204).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[leaveCommunity] Error:", e); next(e); }
 };
 
 export const getCommunity = async (req: Request, res: Response, next: NextFunction) => {
@@ -109,7 +109,7 @@ export const getCommunity = async (req: Request, res: Response, next: NextFuncti
 
     if (!community) return res.status(404).json({ message: 'Community not found' });
     res.json({ ...community, joined: userId ? (community.members?.length ?? 0) > 0 : false });
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getCommunity] Error:", e); next(e); }
 };
 
 export const getPosts = async (req: Request, res: Response, next: NextFunction) => {
@@ -119,7 +119,7 @@ export const getPosts = async (req: Request, res: Response, next: NextFunction) 
       include: { author: { select: { id: true, name: true, avatarUrl: true } } },
       orderBy: { createdAt: 'desc' }
     }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getPosts] Error:", e); next(e); }
 };
 
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
@@ -129,7 +129,7 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
     res.status(201).json(await prisma.post.create({ 
       data: { ...data, communityId: req.params.id as string, authorId: req.user.id } 
     }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[createPost] Error:", e); next(e); }
 };
 
 export const updatePost = async (req: Request, res: Response, next: NextFunction) => {
@@ -139,7 +139,7 @@ export const updatePost = async (req: Request, res: Response, next: NextFunction
     const post = await prisma.post.findUnique({ where: { id: postId } });
     if (!post || post.authorId !== req.user.id) return res.status(403).json({ message: 'Only author can edit' });
     res.json(await prisma.post.update({ where: { id: post.id }, data: postSchema.parse(req.body) }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[updatePost] Error:", e); next(e); }
 };
 
 export const deletePost = async (req: Request, res: Response, next: NextFunction) => {
@@ -150,5 +150,5 @@ export const deletePost = async (req: Request, res: Response, next: NextFunction
     if (!p || p.authorId !== req.user.id) return res.status(403).json({ message: 'Only author can delete' });
     await prisma.post.delete({ where: { id: p.id } });
     res.status(204).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[deletePost] Error:", e); next(e); }
 };

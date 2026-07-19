@@ -14,6 +14,7 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
     
     res.json(projects);
   } catch (e) {
+    console.log("[getProjects] Error:", e);
     next(e);
   }
 };
@@ -30,6 +31,7 @@ export const getResources = async (req: Request, res: Response, next: NextFuncti
     
     res.json(resources);
   } catch (e) {
+    console.log("[getResources] Error:", e);
     next(e);
   }
 };

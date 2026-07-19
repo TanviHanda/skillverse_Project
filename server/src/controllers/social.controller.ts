@@ -25,7 +25,7 @@ export const getCommunityMessages = async (req: Request, res: Response, next: Ne
       orderBy: { createdAt: 'asc' },
       take: 100
     }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getCommunityMessages] Error:", e); next(e); }
 };
 
 export const getCommunityPosts = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,7 +41,7 @@ export const getCommunityPosts = async (req: Request, res: Response, next: NextF
       likedByMe: p.likes.some((l: any) => l.userId === req.user!.id),
       likeCount: p.likes.length
     })));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getCommunityPosts] Error:", e); next(e); }
 };
 
 export const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
@@ -66,7 +66,7 @@ export const toggleLike = async (req: Request, res: Response, next: NextFunction
       });
     }
     res.status(201).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[toggleLike] Error:", e); next(e); }
 };
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
@@ -87,7 +87,7 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
       });
     }
     res.json(comment);
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[addComment] Error:", e); next(e); }
 };
 
 export const getNotifications = async (req: Request, res: Response, next: NextFunction) => {
@@ -98,7 +98,7 @@ export const getNotifications = async (req: Request, res: Response, next: NextFu
       orderBy: { createdAt: 'desc' },
       take: 30
     }));
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[getNotifications] Error:", e); next(e); }
 };
 
 export const markNotificationsRead = async (req: Request, res: Response, next: NextFunction) => {
@@ -108,5 +108,5 @@ export const markNotificationsRead = async (req: Request, res: Response, next: N
       data: { readAt: new Date() }
     });
     res.status(204).end();
-  } catch (e) { next(e); }
+  } catch (e) { console.log("[markNotificationsRead] Error:", e); next(e); }
 };

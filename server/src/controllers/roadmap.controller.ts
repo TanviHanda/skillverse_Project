@@ -14,6 +14,7 @@ export const getRoadmap = async (req: Request, res: Response, next: NextFunction
     });
     res.json(roadmap);
   } catch (e) {
+    console.log("[getRoadmap] Error:", e);
     next(e);
   }
 };
@@ -63,6 +64,7 @@ export const toggleTask = async (req: Request, res: Response, next: NextFunction
 
     res.json(updated);
   } catch (e) {
+    console.log("[toggleTask] Error:", e);
     next(e);
   }
 };

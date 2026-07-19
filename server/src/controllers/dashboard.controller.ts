@@ -12,6 +12,7 @@ export const getDashboard = async (req: Request, res: Response, next: NextFuncti
   try {
     res.json(await dashboardFor(req.user!.id));
   } catch (e) {
+    console.log("[getDashboard] Error:", e);
     next(e);
   }
 };
@@ -27,6 +28,7 @@ export const createActivity = async (req: Request, res: Response, next: NextFunc
     });
     res.status(201).json(activity);
   } catch (e) {
+    console.log("[createActivity] Error:", e);
     next(e);
   }
 };

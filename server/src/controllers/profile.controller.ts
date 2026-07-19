@@ -18,6 +18,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
     });
     res.json(profile);
   } catch (e) {
+    console.log("[getProfile] Error:", e);
     next(e);
   }
 };
@@ -32,6 +33,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     });
     res.json(profile);
   } catch (e) {
+    console.log("[updateProfile] Error:", e);
     next(e);
   }
 };
