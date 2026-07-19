@@ -39,7 +39,7 @@ const finishOnboarding = async () => {
 
    
 
-    await api('api/profile', {
+    await api('/api/profile', {
   method: 'PUT',
   body: JSON.stringify({
     domain: selection.domain,
