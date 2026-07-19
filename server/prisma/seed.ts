@@ -1,4 +1,4 @@
-import { PrismaClient, SkillLevel, ResourceType } from '../src/generated/prisma/client.js';
+import { PrismaClient, SkillLevel, ResourceType } from '../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import 'dotenv/config';
