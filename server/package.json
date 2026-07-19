@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "@google/genai": "^2.12.0",
-    "@prisma/client": "6.19.0",
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "pg": "^8.13.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "latest",
     "cors": "latest",
@@ -25,6 +27,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/pg": "^8.11.0",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "latest",
     "@types/cors": "latest",
@@ -32,7 +35,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.1",
     "dotenv-cli": "^11.0.0",
-    "prisma": "6.19.0",
+    "prisma": "^7.0.0",
     "tsx": "latest",
     "typescript": "latest"
   }

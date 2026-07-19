@@ -1,4 +1,150 @@
-import { PrismaClient, SkillLevel, ResourceType } from '@prisma/client';import bcrypt from 'bcryptjs';const prisma=new PrismaClient();
-async function main(){const passwordHash=await bcrypt.hash('Password123!',12);const user=await prisma.user.upsert({where:{email:'demo@skillhub.ai'},update:{},create:{name:'Jordan Davis',email:'demo@skillhub.ai',passwordHash,profile:{create:{level:'BEGINNER',domain:'Frontend Development',goal:'JOB',dailyMinutes:120,interests:['Frontend Development','React']}}},include:{profile:true}});const roadmap=await prisma.roadmap.upsert({where:{userId:user.id},update:{},create:{userId:user.id,title:'Frontend Developer',progress:67,weeks:{create:[{position:1,title:'Build your foundation',tasks:{create:[{title:'Modern HTML semantics',completed:true,position:1},{title:'CSS layouts & responsive design',completed:true,position:2},{title:'JavaScript fundamentals',completed:true,position:3}]}},{position:2,title:'Think in components',tasks:{create:[{title:'React fundamentals',completed:true,position:1},{title:'State and events',completed:true,position:2},{title:'Build a task tracker',position:3}]}},{position:3,title:'Ship a real experience',tasks:{create:[{title:'Routing and data fetching',position:1},{title:'Styling systems',position:2},{title:'Deploy your portfolio',position:3}]}}]}}});
-for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);await prisma.activity.upsert({where:{id:`seed-${i}`},update:{},create:{id:`seed-${i}`,userId:user.id,date:d,minutes:60+i*15}})}
-const communities=[['Reactiflux','DISCORD','https://www.reactiflux.com/','A focused, highly active React community where practical questions get thoughtful answers.','An active React community is ideal for your frontend path.',34000],['Frontend Mentor','GITHUB','https://www.frontendmentor.io/','Structured, realistic challenges turn concepts into portfolio-worthy practice.','Its project-first challenges fit learners building a frontend portfolio.',24000],['Web Dev Simplified','YOUTUBE','https://www.youtube.com/@WebDevSimplified','Clear visual explanations and concise videos for busy learners.','Short lessons fit a two-hour daily learning rhythm.',1800000]] as const;for(const [name,type,url,description,whySuitable,memberCount] of communities)await prisma.community.upsert({where:{name},update:{},create:{name,type:type as ResourceType,url,description,whySuitable,domains:['Frontend Development','React'],memberCount}});const templates=[['FocusFlow','A calm, keyboard-first Pomodoro timer with local session history.','BEGINNER',['React state','Local storage','Accessible UI']],['PulseBoard','A personal analytics dashboard powered by a public data API.','INTERMEDIATE',['API integration','Data charts','Loading states']],['CollabCanvas','A real-time creative workspace built for focused team ideation.','ADVANCED',['WebSockets','System design','Complex UI']]] as const;for(const [title,description,level,skills] of templates)await prisma.projectTemplate.upsert({where:{id:title.toLowerCase()},update:{},create:{id:title.toLowerCase(),title,description,level:level as SkillLevel,domain:'Frontend Development',skills:[...skills]}});await prisma.resource.upsert({where:{name:'The Odin Project'},update:{},create:{name:'The Odin Project',type:'DOCUMENTATION',url:'https://www.theodinproject.com/',description:'A project-first curriculum that creates a clear, no-fluff path.',domains:['Frontend Development']}});console.log({user: user.email, roadmap:roadmap.title})}main().finally(()=>prisma.$disconnect());
+import { PrismaClient, SkillLevel, ResourceType } from '../src/generated/prisma/client.js';
+import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcryptjs';
+import 'dotenv/config';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+  ssl: { rejectUnauthorized: false },
+});
+const prisma = new PrismaClient({ adapter });
+
+async function main() {
+  const passwordHash = await bcrypt.hash('Password123!', 12);
+  const user = await prisma.user.upsert({
+    where: { email: 'demo@skillhub.ai' },
+    update: {},
+    create: {
+      name: 'Jordan Davis',
+      email: 'demo@skillhub.ai',
+      passwordHash,
+      profile: {
+        create: {
+          level: 'BEGINNER',
+          domain: 'Frontend Development',
+          goal: 'JOB',
+          dailyMinutes: 120,
+          interests: ['Frontend Development', 'React'],
+        },
+      },
+    },
+    include: { profile: true },
+  });
+
+  const roadmap = await prisma.roadmap.upsert({
+    where: { userId: user.id },
+    update: {},
+    create: {
+      userId: user.id,
+      title: 'Frontend Developer',
+      progress: 67,
+      weeks: {
+        create: [
+          {
+            position: 1,
+            title: 'Build your foundation',
+            tasks: {
+              create: [
+                { title: 'Modern HTML semantics', completed: true, position: 1 },
+                { title: 'CSS layouts & responsive design', completed: true, position: 2 },
+                { title: 'JavaScript fundamentals', completed: true, position: 3 },
+              ],
+            },
+          },
+          {
+            position: 2,
+            title: 'Think in components',
+            tasks: {
+              create: [
+                { title: 'React fundamentals', completed: true, position: 1 },
+                { title: 'State and events', completed: true, position: 2 },
+                { title: 'Build a task tracker', position: 3 },
+              ],
+            },
+          },
+          {
+            position: 3,
+            title: 'Ship a real experience',
+            tasks: {
+              create: [
+                { title: 'Routing and data fetching', position: 1 },
+                { title: 'Styling systems', position: 2 },
+                { title: 'Deploy your portfolio', position: 3 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    await prisma.activity.upsert({
+      where: { id: `seed-${i}` },
+      update: {},
+      create: { id: `seed-${i}`, userId: user.id, date: d, minutes: 60 + i * 15 },
+    });
+  }
+
+  const communities = [
+    ['Reactiflux', 'DISCORD', 'https://www.reactiflux.com/', 'A focused, highly active React community where practical questions get thoughtful answers.', 'An active React community is ideal for your frontend path.', 34000],
+    ['Frontend Mentor', 'GITHUB', 'https://www.frontendmentor.io/', 'Structured, realistic challenges turn concepts into portfolio-worthy practice.', 'Its project-first challenges fit learners building a frontend portfolio.', 24000],
+    ['Web Dev Simplified', 'YOUTUBE', 'https://www.youtube.com/@WebDevSimplified', 'Clear visual explanations and concise videos for busy learners.', 'Short lessons fit a two-hour daily learning rhythm.', 1800000],
+  ] as const;
+
+  for (const [name, type, url, description, whySuitable, memberCount] of communities) {
+    await prisma.community.upsert({
+      where: { name },
+      update: {},
+      create: {
+        name,
+        type: type as ResourceType,
+        url,
+        description,
+        whySuitable,
+        domains: ['Frontend Development', 'React'],
+        memberCount,
+      },
+    });
+  }
+
+  const templates = [
+    ['FocusFlow', 'A calm, keyboard-first Pomodoro timer with local session history.', 'BEGINNER', ['React state', 'Local storage', 'Accessible UI']],
+    ['PulseBoard', 'A personal analytics dashboard powered by a public data API.', 'INTERMEDIATE', ['API integration', 'Data charts', 'Loading states']],
+    ['CollabCanvas', 'A real-time creative workspace built for focused team ideation.', 'ADVANCED', ['WebSockets', 'System design', 'Complex UI']],
+  ] as const;
+
+  for (const [title, description, level, skills] of templates) {
+    await prisma.projectTemplate.upsert({
+      where: { id: title.toLowerCase() },
+      update: {},
+      create: {
+        id: title.toLowerCase(),
+        title,
+        description,
+        level: level as SkillLevel,
+        domain: 'Frontend Development',
+        skills: [...skills],
+      },
+    });
+  }
+
+  await prisma.resource.upsert({
+    where: { name: 'The Odin Project' },
+    update: {},
+    create: {
+      name: 'The Odin Project',
+      type: 'DOCUMENTATION',
+      url: 'https://www.theodinproject.com/',
+      description: 'A project-first curriculum that creates a clear, no-fluff path.',
+      domains: ['Frontend Development'],
+    },
+  });
+
+  console.log({ user: user.email, roadmap: roadmap.title });
+}
+
+main()
+  .finally(() => prisma.$disconnect());
